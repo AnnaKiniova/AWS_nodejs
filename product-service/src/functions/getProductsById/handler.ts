@@ -1,13 +1,21 @@
 import type { ValidatedEventAPIGatewayProxyEvent } from "@libs/apiGateway";
 import { formatJSONResponse } from "@libs/apiGateway";
 import { middyfy } from "@libs/lambda";
-import { products } from "../mock.js";
+import products from "../products.json";
 import { ErrorCode, ErrorMessage } from "../../errors";
 import schema from "./schema";
 
 const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> =
   async (event) => {
-    const { productId } = event.pathParameters || 0;
+    let productId: string;
+    try {
+      productId = event.pathParameters.productId;
+    } catch {
+      return formatJSONResponse(
+        { message: ErrorMessage.BAD_REQUEST },
+        ErrorCode.BAD_REQUEST
+      );
+    }
     if (!productId) {
       return formatJSONResponse(
         { message: ErrorMessage.BAD_REQUEST },
@@ -15,8 +23,6 @@ const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> =
       );
     }
     const selectedProduct = products.find((item) => item.id === productId);
-
-    console.log(`selectedProduct: ${selectedProduct}`);
 
     const response = selectedProduct
       ? formatJSONResponse(selectedProduct)
