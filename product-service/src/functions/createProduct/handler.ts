@@ -22,8 +22,13 @@ const dbOptions = {
 const createProduct = async (event) => {
   console.log(event);
   // Validate incoming parameters
-  const { title, description, price, count } = JSON.parse(event.body);
-  if (!title) {
+
+  const title = event.body.title || "";
+  const description = event.body.description || "";
+  const price = event.body.price || "";
+  const count = event.body.count || "";
+
+  if (!title || !count || count < 0) {
     return formatJSONResponse(
       { message: ErrorMessage.BAD_REQUEST },
       ErrorCode.BAD_REQUEST
@@ -40,22 +45,26 @@ const createProduct = async (event) => {
 
   try {
     const id = uuidv4();
-    const insertData = await client.query(
+    await client.query("BEGIN"); // start transaction
+
+    await client.query(
       `INSERT INTO products (id, title, description, price)
         VALUES ($1, $2, $3, $4)`,
       [id, title, description, price]
     );
-
-    const insertValue2 = await client.query(
+    await client.query(
       `INSERT INTO stock (product_id, count)
         VALUES ($1, $2)`,
       [id, count]
     );
-    console.log(insertData);
-    console.log(insertValue2);
+    await client.query("COMMIT"); // end successful transaction
     formatJSONResponse("Created", 200);
   } catch (err) {
-    formatJSONResponse(err.message, ErrorCode.SERVER_ERROR);
+    await client.query("ROLLBACK"); // end successful transaction
+    formatJSONResponse(
+      `Rollback transaction due to ${err.message}`,
+      ErrorCode.SERVER_ERROR
+    );
   } finally {
     client.end();
   }
