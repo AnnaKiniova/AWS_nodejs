@@ -28,7 +28,7 @@ const createProduct = async (event) => {
   const price = event.body.price || "";
   const count = event.body.count || "";
 
-  if (!title || !count || count < 0) {
+  if (!title || !count || count < 0 || price < 0) {
     return formatJSONResponse(
       { message: ErrorMessage.BAD_REQUEST },
       ErrorCode.BAD_REQUEST
@@ -40,7 +40,7 @@ const createProduct = async (event) => {
     await client.connect();
     console.log("Successfully connected");
   } catch (err) {
-    formatJSONResponse(err, ErrorCode.SERVER_ERROR);
+    return formatJSONResponse(err, ErrorCode.SERVER_ERROR);
   }
 
   try {
@@ -58,10 +58,10 @@ const createProduct = async (event) => {
       [id, count]
     );
     await client.query("COMMIT"); // end successful transaction
-    formatJSONResponse("Created", 200);
+    return formatJSONResponse("Created", 200);
   } catch (err) {
     await client.query("ROLLBACK"); // end successful transaction
-    formatJSONResponse(
+    return formatJSONResponse(
       `Rollback transaction due to ${err.message}`,
       ErrorCode.SERVER_ERROR
     );

@@ -33,7 +33,7 @@ const getProductsById = async (event) => {
     await client.connect();
     console.log("Successfully connected");
   } catch (err) {
-    formatJSONResponse(err, ErrorCode.SERVER_ERROR);
+    return formatJSONResponse(err, ErrorCode.SERVER_ERROR);
   }
 
   try {
@@ -46,16 +46,17 @@ const getProductsById = async (event) => {
       WHERE T1.id = $1`,
       [productId]
     );
-    console.log(selectedProduct);
-    const response = selectedProduct
-      ? formatJSONResponse(selectedProduct[0])
-      : formatJSONResponse(
-          { message: ErrorMessage.NOT_FOUND },
-          ErrorCode.NOT_FOUND
-        );
+
+    const response =
+      Object.keys(selectedProduct).length === 0
+        ? formatJSONResponse(
+            { message: ErrorMessage.NOT_FOUND },
+            ErrorCode.NOT_FOUND
+          )
+        : formatJSONResponse(selectedProduct[0]);
     return response;
   } catch (err) {
-    formatJSONResponse(err.message, ErrorCode.SERVER_ERROR);
+    return formatJSONResponse(err.message, ErrorCode.SERVER_ERROR);
   } finally {
     client.end();
   }

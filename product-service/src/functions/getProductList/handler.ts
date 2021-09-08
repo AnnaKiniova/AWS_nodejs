@@ -24,7 +24,7 @@ export const getProductList = async () => {
     await client.connect();
     console.log("Successfully connected");
   } catch (err) {
-    formatJSONResponse(err, ErrorCode.SERVER_ERROR);
+    return formatJSONResponse(err, ErrorCode.SERVER_ERROR);
   }
 
   try {
@@ -37,7 +37,10 @@ export const getProductList = async () => {
 
     return formatJSONResponse(products);
   } catch (err) {
-    formatJSONResponse(ErrorMessage.SERVER_ERROR, ErrorCode.SERVER_ERROR);
+    return formatJSONResponse(
+      ErrorMessage.SERVER_ERROR,
+      ErrorCode.SERVER_ERROR
+    );
   } finally {
     client.end();
   }
