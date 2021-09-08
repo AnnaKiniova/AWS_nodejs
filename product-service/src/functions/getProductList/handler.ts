@@ -18,6 +18,7 @@ const dbOptions = {
 };
 
 export const getProductList = async () => {
+  console.log(`Get list of all products, no query parameters`);
   const client = new Client(dbOptions);
   try {
     await client.connect();

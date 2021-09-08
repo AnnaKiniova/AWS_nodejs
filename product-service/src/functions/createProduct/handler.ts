@@ -4,6 +4,8 @@ import { middyfy } from "@libs/lambda";
 import { Client } from "pg";
 import { ErrorCode, ErrorMessage } from "../../errors";
 
+import { v4 as uuidv4 } from "uuid";
+
 const { PG_HOST, PG_PORT, PG_DATABASE, PG_USERNAME, PG_PASSWORD } = process.env;
 const dbOptions = {
   host: PG_HOST,
@@ -17,18 +19,18 @@ const dbOptions = {
   connectionTimeoutMillis: 5000,
 };
 
-const getProductsById = async (event) => {
-  let productId: string;
+const createProduct = async (event) => {
   console.log(event);
-  try {
-    productId = event.pathParameters.productId;
-  } catch {
+  // Validate incoming parameters
+  const { title, description, price, count } = JSON.parse(event.body);
+  if (!title) {
     return formatJSONResponse(
       { message: ErrorMessage.BAD_REQUEST },
       ErrorCode.BAD_REQUEST
     );
   }
   const client = new Client(dbOptions);
+
   try {
     await client.connect();
     console.log("Successfully connected");
@@ -37,23 +39,21 @@ const getProductsById = async (event) => {
   }
 
   try {
-    console.log(productId);
-    const { rows: selectedProduct } = await client.query(
-      `SELECT * 
-      FROM products AS T1 
-        LEFT JOIN stock AS T2 ON
-          T1.id = T2.product_id
-      WHERE T1.id = $1`,
-      [productId]
+    const id = uuidv4();
+    const insertData = await client.query(
+      `INSERT INTO products (id, title, description, price)
+        VALUES ($1, $2, $3, $4)`,
+      [id, title, description, price]
     );
-    console.log(selectedProduct);
-    const response = selectedProduct
-      ? formatJSONResponse(selectedProduct[0])
-      : formatJSONResponse(
-          { message: ErrorMessage.NOT_FOUND },
-          ErrorCode.NOT_FOUND
-        );
-    return response;
+
+    const insertValue2 = await client.query(
+      `INSERT INTO stock (product_id, count)
+        VALUES ($1, $2)`,
+      [id, count]
+    );
+    console.log(insertData);
+    console.log(insertValue2);
+    formatJSONResponse("Created", 200);
   } catch (err) {
     formatJSONResponse(err.message, ErrorCode.SERVER_ERROR);
   } finally {
@@ -61,4 +61,4 @@ const getProductsById = async (event) => {
   }
 };
 
-export const main = middyfy(getProductsById);
+export const main = middyfy(createProduct);
