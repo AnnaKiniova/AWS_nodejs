@@ -1,0 +1,58 @@
+[
+  {
+    "count": 4,
+    "description": "Cello 1/4 Mirra",
+    "id": "01",
+    "price": 100,
+    "title": "Mirra CB-290 1/4"
+  },
+  {
+    "count": 10,
+    "description": "Violin 1/2 with case",
+    "id": "02",
+    "price": 50,
+    "title": "Cervini HV-150 1/2"
+  },
+  {
+    "count": 2,
+    "description": "Piano digital",
+    "id": "03",
+    "price": 300,
+    "title": "Yamaha P-45B"
+  },
+  {
+    "count": 1,
+    "description": "Drums",
+    "id": "04",
+    "price": 1000,
+    "title": "Soundking SKD230"
+  },
+  {
+    "count": 7,
+    "description": "Guitar acoustic",
+    "id": "05",
+    "price": 300,
+    "title": "Fender CD-60S Natural"
+  },
+  {
+    "count": 2,
+    "description": "Cello 1/2",
+    "id": "06",
+    "price": 900,
+    "title": "Cervini cello 1/2"
+  },
+  {
+    "count": 2,
+    "description": "Piano digital Casio",
+    "id": "07",
+    "price": 1500,
+    "title": "Casio CTK-3500"
+  },
+  {
+    "count": 2,
+    "description": "Piano digital Yamaha",
+    "id": "08",
+    "price": 700,
+    "title": "Yamaha new"
+  }
+]
