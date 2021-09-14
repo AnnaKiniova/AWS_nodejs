@@ -18,14 +18,14 @@ const serverlessConfiguration: AWS = {
     runtime: "nodejs14.x",
     region: "eu-west-1",
     stage: "dev",
-    // apiGateway: {
-    //   minimumCompressionSize: 1024,
-    //   shouldStartNameWithService: true,
-    // },
+    apiGateway: {
+      minimumCompressionSize: 1024,
+      shouldStartNameWithService: true,
+    },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
     },
-    // lambdaHashingVersion: "20201221",
+    lambdaHashingVersion: "20201221",
   },
   // import the function via paths
   functions: { getProductList, getProductsById },
