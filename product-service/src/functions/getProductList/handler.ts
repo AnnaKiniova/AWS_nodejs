@@ -29,7 +29,7 @@ export const getProductList = async () => {
 
   try {
     const { rows: products } = await client.query(
-      `SELECT * 
+      `SELECT T1.id, T1.title, T1.description, T1.price, T2.count
         FROM products AS T1 
           JOIN stock AS T2 ON
             T1.id = T2.product_id`

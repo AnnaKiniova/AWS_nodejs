@@ -33,40 +33,41 @@ const createProduct = async (event) => {
       { message: ErrorMessage.BAD_REQUEST },
       ErrorCode.BAD_REQUEST
     );
-  }
-  const client = new Client(dbOptions);
+  } else {
+    const client = new Client(dbOptions);
 
-  try {
-    await client.connect();
-    console.log("Successfully connected");
-  } catch (err) {
-    return formatJSONResponse(err, ErrorCode.SERVER_ERROR);
-  }
+    try {
+      await client.connect();
+      console.log("Successfully connected");
+    } catch (err) {
+      return formatJSONResponse(err, ErrorCode.SERVER_ERROR);
+    }
 
-  try {
-    const id = uuidv4();
-    await client.query("BEGIN"); // start transaction
+    try {
+      const id = uuidv4();
+      await client.query("BEGIN"); // start transaction
 
-    await client.query(
-      `INSERT INTO products (id, title, description, price)
+      await client.query(
+        `INSERT INTO products (id, title, description, price)
         VALUES ($1, $2, $3, $4)`,
-      [id, title, description, price]
-    );
-    await client.query(
-      `INSERT INTO stock (product_id, count)
+        [id, title, description, price]
+      );
+      await client.query(
+        `INSERT INTO stock (product_id, count)
         VALUES ($1, $2)`,
-      [id, count]
-    );
-    await client.query("COMMIT"); // end successful transaction
-    return formatJSONResponse("Created", 200);
-  } catch (err) {
-    await client.query("ROLLBACK"); // end successful transaction
-    return formatJSONResponse(
-      `Rollback transaction due to ${err.message}`,
-      ErrorCode.SERVER_ERROR
-    );
-  } finally {
-    client.end();
+        [id, count]
+      );
+      await client.query("COMMIT"); // end successful transaction
+      return formatJSONResponse("Created", 200);
+    } catch (err) {
+      await client.query("ROLLBACK"); // end successful transaction
+      return formatJSONResponse(
+        `Rollback transaction due to ${err.message}`,
+        ErrorCode.SERVER_ERROR
+      );
+    } finally {
+      client.end();
+    }
   }
 };
 

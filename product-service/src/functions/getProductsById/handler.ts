@@ -39,7 +39,7 @@ const getProductsById = async (event) => {
   try {
     console.log(productId);
     const { rows: selectedProduct } = await client.query(
-      `SELECT * 
+      `SELECT T1.id, T1.title, T1.description, T1.price, T2.count
       FROM products AS T1 
         LEFT JOIN stock AS T2 ON
           T1.id = T2.product_id
